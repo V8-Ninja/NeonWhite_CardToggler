@@ -9,14 +9,7 @@ namespace NeonWhite_CardToggler
 {
     public class TogglePatches
     {
-        public static bool KatanaEnabled = true;
-        public static bool PurifyEnabled = true;
-        public static bool ElevateEnabled = true;
-        public static bool GodspeedEnabled = true;
-        public static bool StompEnabled = true;
-        public static bool FireballEnabled = true;
-        public static bool DominionEnabled = true;
-        public static bool BookOfLifeEnabled = true;
+        public static bool[] EnabledWeapons = { true, true, true, true, true, true, true, true };
 
         public static bool OnPickupCard_CTPatch(PlayerCardData card, int overrideAmmo = -1)
         {
@@ -25,25 +18,25 @@ namespace NeonWhite_CardToggler
             switch (card.cardID)
             {
                 case "MACHINEGUN":
-                    canPickup = PurifyEnabled;
+                    canPickup = EnabledWeapons[1];
                     break;
                 case "PISTOL":
-                    canPickup = ElevateEnabled;
+                    canPickup = EnabledWeapons[2];
                     break;
                 case "RIFLE":
-                    canPickup = GodspeedEnabled;
+                    canPickup = EnabledWeapons[3];
                     break;
                 case "UZI":
-                    canPickup = StompEnabled;
+                    canPickup = EnabledWeapons[4];
                     break;
                 case "SHOTGUN":
-                    canPickup = FireballEnabled;
+                    canPickup = EnabledWeapons[5];
                     break;
                 case "ROCKETLAUNCHER":
-                    canPickup = DominionEnabled;
+                    canPickup = EnabledWeapons[6];
                     break;
                 case "RAPTURE":
-                    canPickup = BookOfLifeEnabled;
+                    canPickup = EnabledWeapons[7];
                     break;
                 default:
                     break;
@@ -52,25 +45,13 @@ namespace NeonWhite_CardToggler
             return canPickup;
         }
 
-        public static void PlayLevel_CTPatch(LevelData newLevel, bool fromArchive, bool fromRestart = false)
+        public static void ForceSetup_CTPatch()
         {
-            if (!KatanaEnabled)
-                modifySidearm("FISTS");
-            else
-                modifySidearm("KATANA");
-        }
-
-        public static void PlayLevel_CTPatch(string newLevelID, bool fromArchive, Action onLevelLoadComplete = null)
-        {
-            if (!KatanaEnabled)
-                modifySidearm("FISTS");
-            else
-                modifySidearm("KATANA");
-        }
-
-        public static void modifySidearm(string sidearm)
-        {
-            Singleton<MechController>.Instance.ChangeSidearm(sidearm, false);
+            if (!EnabledWeapons[0])
+            {
+                PlayerCardData fistsCard = Singleton<Game>.Instance.GetGameData().GetCard("FISTS");
+                RM.mechController.OnPickupCard(fistsCard, -1);
+            }
         }
     }
 }

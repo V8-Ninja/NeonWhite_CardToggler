@@ -29,6 +29,17 @@ namespace NeonWhite_CardToggler
         protected KeyboardShortcut kbAlpha7;
         protected KeyboardShortcut kbAlpha8;
 
+        protected string[] weaponShortNames = {
+            "KTNA"
+            ,"PRFY"
+            ,"ELVT"
+            ,"GDSP"
+            ,"STMP"
+            ,"FRBL"
+            ,"DOMN"
+            ,"BOLF"
+        };
+
         public void Start()
         {
             // Setting up the static logger
@@ -51,48 +62,10 @@ namespace NeonWhite_CardToggler
             MethodInfo newOnPickupCard = AccessTools.Method(typeof(TogglePatches), "OnPickupCard_CTPatch");
             hrm.Patch(orgOnPickupCard, new HarmonyMethod(newOnPickupCard));
 
-            // Patching the various "Play Level" methods
-            MethodInfo orgPlayLevel1 = AccessTools.Method(
-                typeof(Game)
-                ,"PlayLevel"
-                ,new[] {
-                    typeof(LevelData)
-                    ,typeof(bool)
-                    ,typeof(bool)
-                }
-            );
-            MethodInfo newPlayLevel1 = AccessTools.Method(
-                typeof(TogglePatches)
-                , "PlayLevel_CTPatch"
-                , new[] {
-                    typeof(LevelData)
-                    ,typeof(bool)
-                    ,typeof(bool)
-                }
-            );
-            hrm.Patch(orgPlayLevel1, null, new HarmonyMethod(newPlayLevel1));
-
-            /*
-            MethodInfo orgPlayLevel2 = AccessTools.Method(
-                typeof(Game)
-                ,"PlayLevel"
-                ,new[] {
-                    typeof(string)
-                    ,typeof(bool)
-                    ,typeof(Action)
-                }
-            );
-            MethodInfo newPlayLevel2 = AccessTools.Method(
-                typeof(Game)
-                ,"PlayLevel"
-                , new[] {
-                    typeof(string)
-                    ,typeof(bool)
-                    ,typeof(Action)
-                }
-            );
-            hrm.Patch(orgPlayLevel2, null, new HarmonyMethod(newPlayLevel2));
-            */
+            // Patching the Force Setup method (allowing level start w/ Fists)
+            MethodInfo orgForceSetup = AccessTools.Method(typeof(MechController), "ForceSetup");
+            MethodInfo newForceSetup = AccessTools.Method(typeof(TogglePatches), "ForceSetup_CTPatch");
+            hrm.Patch(orgForceSetup, null, new HarmonyMethod(newForceSetup));
 
             // Notifying that all patches were completed successfully
             Logger.LogInfo("Mod done loading!");
@@ -100,45 +73,53 @@ namespace NeonWhite_CardToggler
 
         public void Update()
         {
+            // Katana Toggle
             if (kbAlpha1.IsDown())
             {
-                TogglePatches.KatanaEnabled = !TogglePatches.KatanaEnabled;
-                PrintPickupStatus(1);
+                TogglePatches.EnabledWeapons[0] = !TogglePatches.EnabledWeapons[0];
+                PrintPickupStatus(0);
             }
+            // Purify Toggle
             else if (kbAlpha2.IsDown())
             {
-                TogglePatches.PurifyEnabled = !TogglePatches.PurifyEnabled;
-                PrintPickupStatus(2);
+                TogglePatches.EnabledWeapons[1] = !TogglePatches.EnabledWeapons[1];
+                PrintPickupStatus(1);
             }
+            // Elevate Toggle
             else if (kbAlpha3.IsDown())
             {
-                TogglePatches.ElevateEnabled = !TogglePatches.ElevateEnabled;
-                PrintPickupStatus(3);
+                TogglePatches.EnabledWeapons[2] = !TogglePatches.EnabledWeapons[2];
+                PrintPickupStatus(2);
             }
+            // Godspeed Toggle
             else if (kbAlpha4.IsDown())
             {
-                TogglePatches.GodspeedEnabled = !TogglePatches.GodspeedEnabled;
-                PrintPickupStatus(4);
+                TogglePatches.EnabledWeapons[3] = !TogglePatches.EnabledWeapons[3];
+                PrintPickupStatus(3);
             }
+            // Stomp Toggle
             else if (kbAlpha5.IsDown())
             {
-                TogglePatches.StompEnabled = !TogglePatches.StompEnabled;
-                PrintPickupStatus(5);
+                TogglePatches.EnabledWeapons[4] = !TogglePatches.EnabledWeapons[4];
+                PrintPickupStatus(4);
             }
+            // Fireball Toggle
             else if (kbAlpha6.IsDown())
             {
-                TogglePatches.FireballEnabled = !TogglePatches.FireballEnabled;
-                PrintPickupStatus(6);
+                TogglePatches.EnabledWeapons[5] = !TogglePatches.EnabledWeapons[5];
+                PrintPickupStatus(5);
             }
+            // Dominion Toggle
             else if (kbAlpha7.IsDown())
             {
-                TogglePatches.DominionEnabled = !TogglePatches.DominionEnabled;
-                PrintPickupStatus(7);
+                TogglePatches.EnabledWeapons[6] = !TogglePatches.EnabledWeapons[6];
+                PrintPickupStatus(6);
             }
+            // Book of Life Toggle
             else if (kbAlpha8.IsDown())
             {
-                TogglePatches.BookOfLifeEnabled = !TogglePatches.BookOfLifeEnabled;
-                PrintPickupStatus(8);
+                TogglePatches.EnabledWeapons[7] = !TogglePatches.EnabledWeapons[7];
+                PrintPickupStatus(7);
             }
         }
 
@@ -152,14 +133,12 @@ namespace NeonWhite_CardToggler
         protected void PrintPickupStatus(int numPressed)
         {
             string status = "\n";
-            status += "\n" + (numPressed == 1 ? "--> " : "") + "KTNA: " + TogglePatches.KatanaEnabled.ToString();
-            status += "\n" + (numPressed == 2 ? "--> " : "") + "PRFY: " + TogglePatches.PurifyEnabled.ToString();
-            status += "\n" + (numPressed == 3 ? "--> " : "") + "ELVT: " + TogglePatches.ElevateEnabled.ToString();
-            status += "\n" + (numPressed == 4 ? "--> " : "") + "GDSP: " + TogglePatches.GodspeedEnabled.ToString();
-            status += "\n" + (numPressed == 5 ? "--> " : "") + "STMP: " + TogglePatches.StompEnabled.ToString();
-            status += "\n" + (numPressed == 6 ? "--> " : "") + "FRBL: " + TogglePatches.FireballEnabled.ToString();
-            status += "\n" + (numPressed == 7 ? "--> " : "") + "DOMN: " + TogglePatches.DominionEnabled.ToString();
-            status += "\n" + (numPressed == 8 ? "--> " : "") + "BOLF: " + TogglePatches.BookOfLifeEnabled.ToString();
+            for (int num = 0; num < weaponShortNames.Length; num++)
+            {
+                status += "\n" + (numPressed == num ? "> " : "  ");
+                status += weaponShortNames[num] + ": " + TogglePatches.EnabledWeapons[num].ToString();
+                status += (numPressed == num ? " <" : "  ");
+            }
             status += "\n\n";
 
             Logger.LogInfo(status);
