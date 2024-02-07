@@ -17,7 +17,7 @@ namespace NeonWhite_CardToggler
     {
         public const string pluginGuid = "v8ninja.neonwhite.cardtoggler";
         public const string pluginName = "Card Toggler (by V8_Ninja)";
-        public const string pluginVersion = "0.0.1";
+        public const string pluginVersion = "0.1.0";
 
         internal static ManualLogSource Log;
         protected KeyboardShortcut kbAlpha1;
